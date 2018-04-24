@@ -3,7 +3,15 @@
 	<head>
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Page Title</title>
+		<style>
+		body {
+			font-family: Courier New, Monospace;
+			background-color: #332;
+			color: #ffd;
+		}
+		</style>
 	</head>
 	<body>
 		<script type='text/javascript'>
@@ -131,7 +139,11 @@ a.a.extend(w,b(e,g,w.ka,l,w.tb));for(v=0;s=w.ea[v];r=s.nextSibling,F=s,v++)s!==r
 return a.a.na(b,e)};a.X.vb=new a.X;a.Fb(a.X.vb);a.b("nativeTemplateEngine",a.X);(function(){a.xb=function(){var a=this.ed=function(){if(!u||!u.tmpl)return 0;try{if(0<=u.tmpl.tag.tmpl.open.toString().indexOf("__"))return 2}catch(a){}return 1}();this.renderTemplateSource=function(b,e,f,g){g=g||t;f=f||{};if(2>a)throw Error("Your version of jQuery.tmpl is too old. Please upgrade to jQuery.tmpl 1.0.0pre or later.");var h=b.data("precompiled");h||(h=b.text()||"",h=u.template(null,"{{ko_with $item.koBindingContext}}"+
 h+"{{/ko_with}}"),b.data("precompiled",h));b=[e.$data];e=u.extend({koBindingContext:e},f.templateOptions);e=u.tmpl(h,b,e);e.appendTo(g.createElement("div"));u.fragments={};return e};this.createJavaScriptEvaluatorBlock=function(a){return"{{ko_code ((function() { return "+a+" })()) }}"};this.addTemplate=function(a,b){t.write("<script type='text/html' id='"+a+"'>"+b+"\x3c/script>")};0<a&&(u.tmpl.tag.ko_code={open:"__.push($1 || '');"},u.tmpl.tag.ko_with={open:"with($1) {",close:"} "})};a.xb.prototype=
 new a.P;var b=new a.xb;0<b.ed&&a.Fb(b);a.b("jqueryTmplTemplateEngine",a.xb)})()})})();})();
+</script>
 
+<!-- Application script -->
+
+<script type='text/javascript'>
 function load(name) {
 	return JSON.parse(localStorage.getItem(name));
 }
@@ -155,22 +167,30 @@ function ActivityViewModel(name, records) {
 	self.records = ko.observableArray(records);
 }
 
+function loadSetList() {
+	var setList = [];
+	var jsonData = load("set-list");
+	if (jsonData) {
+		for (var i = 0; i < jsonData.length; ++i) {
+			var recordsData = jsonData[i].records;
+			var records = [];
+			for (var rIx = 0; rIx < recordsData.length; ++rIx) {
+				var r = recordsData[rIx];
+				records.push(new RecordViewModel(r.sets, r.reps, r.weight, r.timestamp));
+			}
+			setList.push(new ActivityViewModel(jsonData[i]['name'], records));
+		}
+	}
+	return setList;
+}
+
 // Application script
 var appViewModel = new (function(){
 	var self = this;
-	var initialSetList = [];
-	var loaded = load("set-list");
-	if (loaded) {
-		if (Array.isArray(loaded)) {
-			initialSetList = loaded;
-		} else {
-			initialSetList.push(loaded);
-		}
-	}
-
-	self.setList = ko.observableArray(initialSetList);
+	self.setList = ko.observableArray(loadSetList());
 	self.setList.subscribe(function(newValue) {
 		save("set-list", newValue);
+		self.saveData(localStorage.getItem("set-list"));
 	});
 	self.newSetListItem = ko.observable("");
 	self.addSetListItem = function() {
@@ -186,6 +206,7 @@ var appViewModel = new (function(){
 		self.currentActivity().records.push(self.newRecord);
 		self.newRecord = new RecordViewModel();
 	};
+	self.saveData = ko.observable(localStorage.getItem("set-list"));
 })();
 </script>
 		<input data-bind='value: newSetListItem, valueUpdate: "afterkeydown"' />
@@ -204,6 +225,16 @@ var appViewModel = new (function(){
 	    		</tr>
 	    	</table>
 	    	<button data-bind='click: addRecord'>Add</button>
+	    	<table data-bind='foreach: currentActivity().records'>
+	    		<tr>
+	    			<td data-bind='text: sets'></td><td>x</td><td data-bind='text: reps'></td><td>x</td><td data-bind='text: weight'></td><td>kg</td>
+	    		</tr>
+	    	</table>
+	    </div>
+
+	    <div>
+	    	<p>Save data:</p>
+	    	<p data-bind='text: saveData'></p>
 	    </div>
 <script type="text/javascript">
 ko.applyBindings(appViewModel);
