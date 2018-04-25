@@ -201,26 +201,44 @@ function loadSetList() {
 // Application script
 var appViewModel = new (function(){
 	var self = this;
-	self.setList = ko.observableArray(loadSetList());
-	self.setList.subscribe(function(newValue) {
-		save("set-list", newValue);
-		self.saveData(localStorage.getItem("set-list"));
-	});
+	
 	self.newSetListItem = ko.observable("");
+	self.setList = ko.observableArray(loadSetList());
+	self.newRecord = ko.observable(new RecordViewModel());
+	self.currentActivity = ko.observable();
+	self.saveData = ko.observable(localStorage.getItem("set-list"));
+
+	self.save = function() {
+		save('set-list', self.setList());
+		self.saveData(localStorage.getItem("set-list"));
+	}
+
+	self.setList.subscribe(function(newValue) {
+		self.save()
+	});
+	
 	self.addSetListItem = function() {
 		if (self.newSetListItem() != "") {
 			self.setList.push( new ActivityViewModel( self.newSetListItem() ) );
 			self.newSetListItem("");
 		}
 	};
-	self.currentActivity = ko.observable();
-	self.newRecord = new RecordViewModel();
+
+	self.currentActivity.subscribe(function(newValue){
+		// if (newValue.records().length > 0) {
+		// 	self.newRecord(newValue.records()[newValue.records.length-1]);
+		// } else {
+		// 	self.newRecord(new RecordViewModel());
+		// }
+	});
 	self.addRecord = function() {
-		self.newRecord.timestamp = new Date();
-		self.currentActivity().records.push(self.newRecord);
-		self.newRecord = new RecordViewModel();
+		var entry = self.newRecord();
+		self.currentActivity().records.unshift(
+			new RecordViewModel(entry.sets, entry.reps, entry.weight, new Date())
+		);
+		self.newRecord(new RecordViewModel());
+		self.save();
 	};
-	self.saveData = ko.observable(localStorage.getItem("set-list"));
 })();
 </script>
 		<input data-bind='value: newSetListItem, valueUpdate: "afterkeydown"' />
