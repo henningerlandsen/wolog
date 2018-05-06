@@ -18,6 +18,14 @@
 			color: #998;
 			font-size: small;
 		}
+
+		input[type="number"] {
+			width: 45pt;
+			font-size: large;
+			text-align: center;
+			background-color: #664;
+			color: inherit;
+		}
 		</style>
 	</head>
 	<body>
@@ -248,15 +256,17 @@ var appViewModel = new (function(){
 	    </div>
 	    <div data-bind="if: currentActivity">
 	    	<h1 data-bind="text: currentActivity().name"></h1>
-	    	<table data-bind="with: newRecord">
+	    	<table id="record-input-table" data-bind="with: newRecord">
 	    		<tr>
-	    			<td>Sets:</td><td>Reps:</td><td>Wegith:</td>
+	    			<td>Sets:</td><td>Reps:</td><td>Wegith:</td><td></td>
 	    		</tr>
 	    		<tr>
-	    			<td><input data-bind='value: sets'/></td><td><input data-bind='value: reps'/></td><td><input data-bind='value: weight'/></td>
+					<td><input data-bind='value: sets' type="number"/></td>
+					<td><input data-bind='value: reps' type="number"/></td>
+					<td><input data-bind='value: weight' type="number"/></td>
+					<td><button data-bind='click: $root.addRecord'>Add</button></td>
 	    		</tr>
 	    	</table>
-	    	<button data-bind='click: addRecord'>Add</button>
 	    	<table data-bind='foreach: currentActivity().records'>
 	    		<tr>
 	    			<td data-bind='text: sets'></td>
