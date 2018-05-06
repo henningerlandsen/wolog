@@ -264,9 +264,9 @@ var appViewModel = new (function(){
 	    			<td>Sets:</td><td>Reps:</td><td>Wegith:</td><td></td>
 	    		</tr>
 	    		<tr>
-					<td><input data-bind='value: sets' type="number"/></td>
-					<td><input data-bind='value: reps' type="number"/></td>
-					<td><input data-bind='value: weight' type="number"/></td>
+					<td><input data-bind='value: sets' type="number" step="1" pattern="\d+"/></td>
+					<td><input data-bind='value: reps' type="number" step="1" pattern="\d+"/></td>
+					<td><input data-bind='value: weight' type="number" step="0.5"pattern="\d+([\.,]d+)?" /></td>
 					<td><button data-bind='click: $root.addRecord'>Add</button></td>
 	    		</tr>
 	    	</table>
