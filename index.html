@@ -236,11 +236,13 @@ var appViewModel = new (function(){
 	};
 
 	self.currentActivity.subscribe(function(newValue){
-		// if (newValue.records().length > 0) {
-		// 	self.newRecord(newValue.records()[newValue.records.length-1]);
-		// } else {
-		// 	self.newRecord(new RecordViewModel());
-		// }
+		if (newValue.records().length > 0) {
+			var prev = newValue.records()[0];
+			console.log(prev);
+		 	self.newRecord(new RecordViewModel(prev.sets, prev.reps, prev.weight, null));
+		} else {
+		 	self.newRecord(new RecordViewModel());
+		}
 	});
 	self.addRecord = function() {
 		var entry = self.newRecord();
