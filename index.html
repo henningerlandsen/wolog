@@ -29,6 +29,14 @@
 			background-color: #664;
 			color: inherit;
 		}
+
+		table .number {
+			text-align: right;
+		}
+		table .separator {
+			padding-left: 1ch;
+			padding-right: 1ch;
+		}
 		</style>
 	</head>
 	<body>
@@ -274,12 +282,12 @@ var appViewModel = new (function(){
 	    	</table>
 	    	<table data-bind='foreach: currentActivity().records'>
 	    		<tr>
-	    			<td data-bind='text: sets'></td>
-	    			<td>x</td>
-	    			<td data-bind='text: reps'></td>
-	    			<td>x</td>
-	    			<td data-bind='text: weight'></td>
-	    			<td>kg</td>
+	    			<td class="number" data-bind='text: sets'></td>
+	    			<td class="separator">x</td>
+	    			<td class="number" data-bind='text: reps'></td>
+	    			<td class="separator">x</td>
+	    			<td class="number" data-bind='text: weight + " kg"'></td>
+	    			<td class="separator"></td>
 	    			<td data-bind='text: moment(timestamp).fromNow()'></td>
 	    		</tr>
 	    	</table>
