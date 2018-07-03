@@ -37,6 +37,13 @@
 			padding-left: 1ch;
 			padding-right: 1ch;
 		}
+
+        .last-record {
+            margin-left: 1em;
+            font-size: 0.75em;
+            color: #9f9f6a;
+            text-shadow: none;
+        }
 		</style>
 	</head>
 	<body>
@@ -260,12 +267,22 @@ var appViewModel = new (function(){
 		self.newRecord(new RecordViewModel());
 		self.save();
 	};
+
+    self.lastRecordSummary = function(records) {
+        if (records && records().length > 0) {
+            var record = records()[0];
+            if (record) {
+                return record.sets + " x " + record.reps + " x " + record.weight + " kg";
+            }
+        }
+        return "";
+    };
 })();
 </script>
 		<input data-bind='value: newSetListItem, valueUpdate: "afterkeydown"' />
 		<button data-bind='enbale: newSetListItem().length > 0, click: addSetListItem'>Add</button>
 		<div data-bind="foreach: setList">
-	        <div data-bind="text: name, click: function() { $root.currentActivity($data); }"></div>
+            <div><span class="activity" data-bind="text: name, click: function() { $root.currentActivity($data); }"></span><span class="last-record" data-bind="text: $root.lastRecordSummary(records)"></span></div>
 	    </div>
 	    <div data-bind="if: currentActivity">
 	    	<h1 data-bind="text: currentActivity().name"></h1>
