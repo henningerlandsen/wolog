@@ -69,10 +69,11 @@
             self.timestamp = timestamp;
         }
 
-        function ActivityViewModel(name, records) {
+        function ActivityViewModel(name, records, hidden) {
             var self = this;
             self.name = ko.observable(name);
             self.records = ko.observableArray(records);
+            self.hidden = ko.observable(hidden === undefined ? false : hidden);
         }
 
         function loadSetList() {
@@ -86,7 +87,7 @@
                         var r = recordsData[rIx];
                         records.push(new RecordViewModel(r.sets, r.reps, r.weight, new Date(r.timestamp)));
                     }
-                    setList.push(new ActivityViewModel(jsonData[i]['name'], records));
+                    setList.push(new ActivityViewModel(jsonData[i]['name'], records, jsonData[i]['hidden']));
                 }
             }
             return setList;
@@ -145,16 +146,29 @@
                 }
                 return "";
             };
+
+            self.showHidden = ko.observable(false);
+            self.showHidden.subscribe(function(checked) {
+                if (!checked) {
+                    self.save();
+                }
+            });
         })();
         
         window.onload = function() {     
             ko.applyBindings(appViewModel);
         }
     </script>
+
 	<input data-bind='value: newSetListItem, valueUpdate: "afterkeydown"' />
 	<button data-bind='enbale: newSetListItem().length > 0, click: addSetListItem'>Add</button>
+    <input type="checkbox" data-bind='checked: showHidden'>Show hidden</input>
 	<div data-bind="foreach: setList">
-        <div><span class="activity" data-bind="text: name, click: function() { $root.currentActivity($data); }"></span><span class="last-record" data-bind="text: $root.lastRecordSummary(records)"></span></div>
+        <div data-bind='if: !hidden() || $root.showHidden()'>
+            <input type='checkbox' data-bind='checked: hidden, visible: $root.showHidden()'></input>
+            <span class="activity" data-bind="text: name, click: function() { $root.currentActivity($data); }"></span>
+            <span class="last-record" data-bind="text: $root.lastRecordSummary(records)"></span>
+        </div>
 	</div>
 	<div data-bind="if: currentActivity">
     	<h1 data-bind="text: currentActivity().name"></h1>
@@ -186,8 +200,5 @@
         <p>Save data:</p>
         <p data-bind='text: saveData'></p>
     </div>
-   <script type="text/javascript">
-
-    </script>
 </body>
 </html>
